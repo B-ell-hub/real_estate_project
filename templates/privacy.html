@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Cosy Hideaway kenya</title>
+    <link rel="icon" type="image/jpeg" href="/static/uploads/hero.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-privacy-section {
+            background-image: url('/static/uploads/hero.jpg');
+            background-size: cover;
+            background-position: center center;
+            position: relative;
+        }
+        .hero-privacy-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+            z-index: 1;
+        }
+        .hero-privacy-section > div {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Cosy Hideaway kenya</a>
+                </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
+                    <a href="/properties" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Properties</a>
+                    <a href="/about" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+                    {% if user %}
+                        {% if user.role == 'admin' %}
+                            <a href="/admin/dashboard" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition shadow-md">Dashboard</a>
+                        {% elif user.role == 'manager' %}
+                            <a href="/manager/dashboard" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition shadow-md">Dashboard</a>
+                        {% else %}
+                            <a href="/dashboard" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition shadow-md">Dashboard</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="/login" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition shadow-md">Login</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile menu button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 hover:text-gray-900 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-4 pt-2 pb-3 space-y-1">
+                <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Home</a>
+                <a href="/properties" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Properties</a>
+                <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">About</a>
+                <a href="/contact" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Contact</a>
+                {% if user %}
+                    {% if user.role == 'admin' %}
+                        <a href="/admin/dashboard" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Dashboard</a>
+                    {% elif user.role == 'manager' %}
+                        <a href="/manager/dashboard" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Dashboard</a>
+                    {% else %}
+                        <a href="/dashboard" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Dashboard</a>
+                    {% endif %}
+                {% else %}
+                    <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-privacy-section py-16 sm:py-24 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight mb-4">Privacy Policy</h1>
+            <p class="text-lg sm:text-xl font-light opacity-90">Your privacy is important to us. Learn how we protect your information.</p>
+            <p class="text-sm mt-4 opacity-75">Last updated: October 2025</p>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex-grow">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div class="p-6 sm:p-8 lg:p-12">
+                <div class="space-y-8">
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+                            Introduction
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Cosy Hideaway kenya ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+                            Information We Collect
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed mb-4">We collect information that you provide directly to us, including:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                            <li><strong class="text-gray-900">Account Information:</strong> Username, email address, full name, and password</li>
+                            <li><strong class="text-gray-900">Property Information:</strong> Property details, images, and descriptions when you list a property</li>
+                            <li><strong class="text-gray-900">Booking Information:</strong> Booking requests, dates, and messages</li>
+                            <li><strong class="text-gray-900">Communication Data:</strong> Messages and communications sent through our platform</li>
+                        </ul>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
+                            How We Use Your Information
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed mb-4">We use the information we collect to:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                            <li>Provide, maintain, and improve our services</li>
+                            <li>Process and manage bookings and property listings</li>
+                            <li>Send you administrative information, updates, and notifications</li>
+                            <li>Respond to your inquiries and provide customer support</li>
+                            <li>Detect, prevent, and address technical issues and security threats</li>
+                            <li>Comply with legal obligations</li>
+                        </ul>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">4</span>
+                            Information Sharing and Disclosure
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed mb-4">We do not sell your personal information. We may share your information in the following circumstances:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                            <li><strong class="text-gray-900">With Property Owners/Tenants:</strong> To facilitate bookings and communications</li>
+                            <li><strong class="text-gray-900">Service Providers:</strong> With third-party service providers who assist us in operating our platform</li>
+                            <li><strong class="text-gray-900">Legal Requirements:</strong> When required by law or to protect our rights and safety</li>
+                            <li><strong class="text-gray-900">Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+                        </ul>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">5</span>
+                            Data Security
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            We implement appropriate technical and organizational security measures to protect your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">6</span>
+                            Your Rights
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed mb-4">You have the right to:</p>
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                            <li>Access and receive a copy of your personal information</li>
+                            <li>Correct inaccurate or incomplete information</li>
+                            <li>Request deletion of your personal information</li>
+                            <li>Object to processing of your personal information</li>
+                            <li>Withdraw consent at any time</li>
+                        </ul>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">7</span>
+                            Cookies and Tracking Technologies
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            We use cookies and similar tracking technologies to track activity on our website and store certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">8</span>
+                            Third-Party Links
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Our website may contain links to third-party websites. We are not responsible for the privacy practices of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">9</span>
+                            Children's Privacy
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Our services are not intended for individuals under the age of 18. We do not knowingly collect personal information from children. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">10</span>
+                            Changes to This Privacy Policy
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.
+                        </p>
+                    </section>
+
+                    <section class="border-l-4 border-blue-500 pl-6 py-2 bg-gradient-to-r from-blue-50 to-transparent rounded-r-lg">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">11</span>
+                            Contact Us
+                        </h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            If you have any questions about this Privacy Policy, please <a href="/contact" class="text-blue-600 hover:text-blue-700 underline font-medium">contact us</a> through our website.
+                        </p>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex flex-wrap justify-center gap-4 mb-4">
+                    <a href="/terms" class="text-sm text-gray-300 hover:text-white transition underline">Terms of Service</a>
+                    <span class="text-gray-500">|</span>
+                    <a href="/privacy" class="text-sm text-gray-300 hover:text-white transition underline">Privacy Policy</a>
+                </div>
+                <p class="text-sm mb-2">&copy; 2025 Cosy Hideaway kenya. All rights reserved.</p>
+                <p class="text-xs text-gray-400">
+                    Developed by <a href="https://epicedgecreative.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 underline transition font-medium">EpicEdge Creative</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

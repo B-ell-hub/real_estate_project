@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties - Property Management</title>
+    <link rel="icon" type="image/jpeg" href="/static/uploads/hero.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .property-card {
+            transition: all 0.3s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .property-image {
+            transition: transform 0.3s ease;
+        }
+        .property-card:hover .property-image {
+            transform: scale(1.05);
+        }
+        @media (max-width: 640px) {
+            .mobile-menu {
+                display: none;
+            }
+            .mobile-menu.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-4 items-center">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
+                    <a href="/properties" class="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm font-medium">Properties</a>
+                    <a href="/about" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+                    {% if user and user.role == 'admin' %}
+                    <a href="/post-property" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Post Property</a>
+                    {% endif %}
+                    {% if user %}
+                    <span class="text-gray-700 px-3 py-2 text-sm font-medium">Welcome, {{ user.username }}</span>
+                    <a href="/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Logout</a>
+                    {% else %}
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
+                    <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Register</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu md:hidden pb-4">
+                <div class="flex flex-col space-y-2">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/properties" class="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm font-medium">Properties</a>
+                    <a href="/about" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    {% if user and user.role == 'admin' %}
+                    <a href="/post-property" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Post Property</a>
+                    {% endif %}
+                    {% if user %}
+                    <span class="text-gray-700 px-3 py-2 text-sm font-medium">Welcome, {{ user.username }}</span>
+                    <a href="/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                    {% else %}
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                    <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filters Section -->
+    <section class="bg-gradient-to-br from-gray-50 to-white shadow-lg sticky top-16 z-40 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+            <form method="GET" action="/properties" class="space-y-3 sm:space-y-5">
+                <!-- Main Search Bar -->
+                <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 border border-gray-200">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide hidden sm:block">Search Properties</label>
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <input type="text" name="search" value="{{ filters.search }}" placeholder="Search by location, title, or keywords..." class="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
+                            </div>
+                        </div>
+                        <div class="sm:w-48">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide hidden sm:block">Property Type</label>
+                            <select name="type" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm bg-white">
+                        <option value="all" {% if filters.type == 'all' %}selected{% endif %}>All Types</option>
+                        <option value="sale" {% if filters.type == 'sale' %}selected{% endif %}>For Sale</option>
+                        <option value="rent" {% if filters.type == 'rent' %}selected{% endif %}>For Rent</option>
+                        <option value="airbnb" {% if filters.type == 'airbnb' %}selected{% endif %}>AirBnB</option>
+                    </select>
+                </div>
+                        <div class="sm:w-48">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide hidden sm:block">Sort By</label>
+                            <select name="sort" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm bg-white">
+                                <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                                <option value="price_low" {% if filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_high" {% if filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                                <option value="featured" {% if filters.sort == 'featured' %}selected{% endif %}>Featured First</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Filters (Collapsible) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button type="button" onclick="toggleAdvancedFilters()" class="w-full px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between text-left hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            <span class="font-semibold text-gray-800 text-sm sm:text-base">Advanced Filters</span>
+                        </div>
+                        <svg id="filterToggleIcon" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <div id="advancedFilters" class="hidden px-3 sm:px-5 pb-3 sm:pb-5 border-t border-gray-200">
+                        <div class="pt-3 sm:pt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide">City</label>
+                                <input type="text" name="city" value="{{ filters.city }}" placeholder="Enter city name" list="cities" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
+                                <datalist id="cities">
+                                    {% for city in filters.cities %}
+                                    <option value="{{ city }}">
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide">Min Price (KSH)</label>
+                                <input type="number" name="min_price" value="{{ filters.min_price }}" placeholder="0" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide">Max Price (KSH)</label>
+                                <input type="number" name="max_price" value="{{ filters.max_price }}" placeholder="No limit" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm">
+                </div>
+                <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide">Bedrooms</label>
+                                <select name="bedrooms" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm bg-white">
+                                    <option value="">Any</option>
+                                    <option value="1" {% if filters.bedrooms == '1' %}selected{% endif %}>1+</option>
+                                    <option value="2" {% if filters.bedrooms == '2' %}selected{% endif %}>2+</option>
+                                    <option value="3" {% if filters.bedrooms == '3' %}selected{% endif %}>3+</option>
+                                    <option value="4" {% if filters.bedrooms == '4' %}selected{% endif %}>4+</option>
+                                    <option value="5" {% if filters.bedrooms == '5' %}selected{% endif %}>5+</option>
+                                </select>
+                </div>
+                <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1.5 sm:mb-2 uppercase tracking-wide">Bathrooms</label>
+                                <select name="bathrooms" class="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm bg-white">
+                                    <option value="">Any</option>
+                                    <option value="1" {% if filters.bathrooms == '1' %}selected{% endif %}>1+</option>
+                                    <option value="2" {% if filters.bathrooms == '2' %}selected{% endif %}>2+</option>
+                                    <option value="3" {% if filters.bathrooms == '3' %}selected{% endif %}>3+</option>
+                                    <option value="4" {% if filters.bathrooms == '4' %}selected{% endif %}>4+</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
+                    <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 hidden sm:flex">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        <span>Use filters to find your perfect property</span>
+                    </div>
+                    <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                        <button type="submit" class="flex-1 sm:flex-none bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 font-semibold transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Apply Filters</span>
+                            <span class="sm:hidden">Apply</span>
+                        </button>
+                        <a href="/properties" class="px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold transition text-sm sm:text-base whitespace-nowrap">
+                            Clear All
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Properties Grid -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex-grow">
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                {% if filters.type == 'sale' %}Properties for Sale
+                {% elif filters.type == 'rent' %}Properties for Rent
+                {% elif filters.type == 'airbnb' %}AirBnB Listings
+                {% else %}All Properties{% endif %}
+            </h2>
+                    <p class="text-gray-600 text-sm sm:text-base">Discover your perfect property</p>
+                </div>
+                <div class="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-3 rounded-xl border border-blue-100">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="text-blue-800 font-bold text-lg">{{ pagination.total if pagination else properties|length }}</span>
+                    <span class="text-blue-700 font-medium">properties found</span>
+                </div>
+            </div>
+        </div>
+        
+        {% if properties %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {% for property in properties %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden property-card cursor-pointer border border-gray-100 hover:border-blue-200 transition-all duration-300 flex flex-col">
+                <a href="/property/{{ property.id }}" class="block flex flex-col flex-grow">
+                    <div class="h-52 sm:h-64 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative flex-shrink-0">
+                        {% if property.images and property.images|length > 0 %}
+                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover property-image">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
+                            <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0"></div>
+                        <span class="absolute top-4 left-4 bg-gradient-to-r {% if property.property_type == 'sale' %}from-blue-600 to-blue-700{% elif property.property_type == 'rent' %}from-green-600 to-green-700{% else %}from-purple-600 to-purple-700{% endif %} text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-xl backdrop-blur-sm">
+                            {% if property.property_type == 'sale' %}For Sale
+                            {% elif property.property_type == 'rent' %}For Rent
+                            {% else %}AirBnB{% endif %}
+                        </span>
+                        {% if user %}
+                        <button onclick="event.preventDefault(); toggleFavorite({{ property.id }}, this)" class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2.5 shadow-xl hover:bg-white transition z-10 favorite-btn-{{ property.id }}" title="Add to favorites">
+                            <svg class="w-5 h-5 text-gray-700 favorite-icon-{{ property.id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="p-5 sm:p-6 flex flex-col flex-grow">
+                        <div class="flex-grow">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] hover:text-blue-600 transition">{{ property.title }}</h3>
+                            <div class="flex items-center gap-1.5 text-gray-600 text-sm mb-4">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="line-clamp-1">{{ property.address }}, {{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3 text-sm mb-4 pb-4 border-b border-gray-100">
+                                {% if property.bedrooms %}
+                                <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg text-gray-700 font-medium">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                    </svg>
+                                    {{ property.bedrooms }} Beds
+                                </span>
+                                {% endif %}
+                                {% if property.bathrooms %}
+                                <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg text-gray-700 font-medium">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                                    </svg>
+                                    {{ property.bathrooms }} Baths
+                                </span>
+                                {% endif %}
+                                {% if property.area %}
+                                <span class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg text-gray-700 font-medium">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                                    </svg>
+                                    {{ property.area }} sqft
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if property.property_type in ['rent', 'airbnb'] %}
+                            <div class="mb-3 min-h-[3rem]">
+                                <p class="text-xs text-gray-500 mb-1">Units Available</p>
+                                <p class="text-sm font-medium {% if property.units_available == 0 or property.status in ['rented', 'sold'] %}text-red-600{% else %}text-green-600{% endif %}">
+                                    {% if property.status == 'sold' %}Sold - Not Available
+                                    {% elif property.status == 'rented' %}Rented - Not Available
+                                    {% elif property.units_available == 0 %}Fully Booked - Not Available
+                                    {% else %}{{ property.units_available or 0 }} Available{% endif %}
+                                </p>
+                            </div>
+                            {% elif property.property_type == 'sale' %}
+                            <div class="mb-3 min-h-[3rem]">
+                                <p class="text-xs text-gray-500 mb-1">Units Available</p>
+                                <p class="text-sm font-medium {% if property.units_available == 0 or property.status == 'sold' %}text-red-600{% else %}text-green-600{% endif %}">
+                                    {% if property.status == 'sold' %}Sold - Not Available
+                                    {% elif property.units_available == 0 %}No Units Available
+                                    {% else %}{{ property.units_available or 0 }} Available{% endif %}
+                                </p>
+                            </div>
+                            {% elif property.status in ['sold', 'rented'] %}
+                            <div class="mb-3 min-h-[3rem]">
+                                <p class="text-xs text-gray-500 mb-1">Status</p>
+                                <p class="text-sm font-medium text-red-600">
+                                    {% if property.status == 'sold' %}Sold - Not Available
+                                    {% else %}Rented - Not Available{% endif %}
+                                </p>
+                            </div>
+                            {% else %}
+                            <div class="mb-3 min-h-[3rem]"></div>
+                            {% endif %}
+                        </div>
+                        <div class="pt-4 border-t border-gray-100 mt-auto">
+                            <div class="mb-3 min-h-[3.5rem]">
+                                <div class="flex items-baseline gap-1.5 flex-wrap">
+                                    <span class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">KSH {{ "{:,.0f}".format(property.price) }}</span>
+                                    {% if property.property_type == 'airbnb' %}
+                                    <span class="text-sm text-gray-500 whitespace-nowrap flex-shrink-0 self-end pb-0.5">/night</span>
+                                    {% elif property.property_type == 'rent' %}
+                                    <span class="text-sm text-gray-500 whitespace-nowrap flex-shrink-0 self-end pb-0.5">/month</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex items-center text-blue-600 font-semibold text-sm sm:text-base">
+                                <span>View Details</span>
+                                <svg class="w-4 h-4 ml-1.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-16 sm:py-20 bg-white rounded-lg shadow-md">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-gray-600 text-lg mb-4">No properties found matching your criteria.</p>
+            <a href="/properties" class="inline-block text-blue-600 hover:text-blue-800 font-medium underline">Clear filters</a>
+        </div>
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if pagination and pagination.total_pages > 1 %}
+        <div class="mt-12 flex flex-col items-center">
+            <div class="flex items-center justify-center space-x-2">
+                <!-- Previous Button -->
+                {% if pagination.has_prev %}
+                <a href="?page={{ pagination.prev_page }}{% if filters.type and filters.type != 'all' %}&type={{ filters.type }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.min_price %}&min_price={{ filters.min_price }}{% endif %}{% if filters.max_price %}&max_price={{ filters.max_price }}{% endif %}{% if filters.city %}&city={{ filters.city }}{% endif %}{% if filters.bedrooms %}&bedrooms={{ filters.bedrooms }}{% endif %}{% if filters.bathrooms %}&bathrooms={{ filters.bathrooms }}{% endif %}{% if filters.amenities %}&amenities={{ filters.amenities }}{% endif %}{% if filters.sort %}&sort={{ filters.sort }}{% endif %}" 
+                   class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-blue-500 transition transform hover:scale-105">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Previous
+                </a>
+                {% else %}
+                <span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 rounded-lg text-gray-400 font-medium cursor-not-allowed">
+                    <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Previous
+                </span>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                <div class="flex items-center space-x-1">
+                    {% for page_num in range(1, pagination.total_pages + 1) %}
+                        {% if page_num == pagination.page %}
+                        <span class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-bold shadow-lg">
+                            {{ page_num }}
+                        </span>
+                        {% elif page_num <= 2 or page_num > pagination.total_pages - 2 or (page_num >= pagination.page - 1 and page_num <= pagination.page + 1) %}
+                        <a href="?page={{ page_num }}{% if filters.type and filters.type != 'all' %}&type={{ filters.type }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.min_price %}&min_price={{ filters.min_price }}{% endif %}{% if filters.max_price %}&max_price={{ filters.max_price }}{% endif %}{% if filters.city %}&city={{ filters.city }}{% endif %}{% if filters.bedrooms %}&bedrooms={{ filters.bedrooms }}{% endif %}{% if filters.bathrooms %}&bathrooms={{ filters.bathrooms }}{% endif %}{% if filters.amenities %}&amenities={{ filters.amenities }}{% endif %}{% if filters.sort %}&sort={{ filters.sort }}{% endif %}" 
+                           class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-blue-500 transition transform hover:scale-105">
+                            {{ page_num }}
+                        </a>
+                        {% elif page_num == 3 and pagination.page > 4 %}
+                        <span class="px-2 text-gray-500">...</span>
+                        {% elif page_num == pagination.total_pages - 2 and pagination.page < pagination.total_pages - 3 %}
+                        <span class="px-2 text-gray-500">...</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Next Button -->
+                {% if pagination.has_next %}
+                <a href="?page={{ pagination.next_page }}{% if filters.type and filters.type != 'all' %}&type={{ filters.type }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.min_price %}&min_price={{ filters.min_price }}{% endif %}{% if filters.max_price %}&max_price={{ filters.max_price }}{% endif %}{% if filters.city %}&city={{ filters.city }}{% endif %}{% if filters.bedrooms %}&bedrooms={{ filters.bedrooms }}{% endif %}{% if filters.bathrooms %}&bathrooms={{ filters.bathrooms }}{% endif %}{% if filters.amenities %}&amenities={{ filters.amenities }}{% endif %}{% if filters.sort %}&sort={{ filters.sort }}{% endif %}" 
+                   class="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-blue-500 transition transform hover:scale-105">
+                    Next
+                    <svg class="w-5 h-5 inline-block ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                {% else %}
+                <span class="px-4 py-2 bg-gray-100 border-2 border-gray-200 rounded-lg text-gray-400 font-medium cursor-not-allowed">
+                    Next
+                    <svg class="w-5 h-5 inline-block ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </span>
+                {% endif %}
+            </div>
+            
+            <!-- Page Info -->
+            <p class="mt-4 text-sm text-gray-600">
+                Showing <span class="font-semibold">{{ ((pagination.page - 1) * pagination.per_page) + 1 }}</span> to 
+                <span class="font-semibold">{{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }}</span> of 
+                <span class="font-semibold">{{ pagination.total }}</span> properties
+            </p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex flex-wrap justify-center gap-4 mb-4">
+                    <a href="/terms" class="text-sm text-gray-300 hover:text-white transition underline">Terms of Service</a>
+                    <span class="text-gray-500">|</span>
+                    <a href="/privacy" class="text-sm text-gray-300 hover:text-white transition underline">Privacy Policy</a>
+                </div>
+                <p class="text-sm sm:text-base mb-2">&copy; 2025 Cosy Hideaway kenya. All rights reserved.</p>
+                <p class="text-xs sm:text-sm text-gray-400">
+                    Developed by <a href="https://epicedgecreative.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 underline transition font-medium">EpicEdge Creative</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+        
+        function toggleAdvancedFilters() {
+            const filters = document.getElementById('advancedFilters');
+            const icon = document.getElementById('filterToggleIcon');
+            filters.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+        
+        // Favorite functionality for property cards
+        {% if user %}
+        // Check favorite status for all properties on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            {% for property in properties %}
+            checkFavoriteStatus({{ property.id }});
+            {% endfor %}
+        });
+        
+        function checkFavoriteStatus(propertyId) {
+            fetch(`/favorites/check/${propertyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateFavoriteButton(propertyId, data.is_favorite);
+                })
+                .catch(error => {
+                    console.error('Error checking favorite status:', error);
+                });
+        }
+        
+        function toggleFavorite(propertyId, button) {
+            const icon = button.querySelector('.favorite-icon-' + propertyId);
+            const isFavorite = icon.classList.contains('text-red-600');
+            
+            const url = isFavorite ? `/favorites/remove/${propertyId}` : `/favorites/add/${propertyId}`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateFavoriteButton(propertyId, !isFavorite);
+                } else {
+                    alert(data.message || 'Error updating favorite');
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling favorite:', error);
+                alert('Error updating favorite');
+            });
+        }
+        
+        function updateFavoriteButton(propertyId, isFavorite) {
+            const button = document.querySelector('.favorite-btn-' + propertyId);
+            const icon = document.querySelector('.favorite-icon-' + propertyId);
+            
+            if (icon) {
+                if (isFavorite) {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" fill="currentColor"></path>';
+                    icon.classList.add('text-red-600');
+                    icon.classList.remove('text-gray-600');
+                    if (button) button.title = 'Remove from favorites';
+                } else {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>';
+                    icon.classList.remove('text-red-600');
+                    icon.classList.add('text-gray-600');
+                    if (button) button.title = 'Add to favorites';
+                }
+            }
+        }
+        {% endif %}
+    </script>
+</body>
+</html>
+

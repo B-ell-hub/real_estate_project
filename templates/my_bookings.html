@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Cosy Hideaway kenya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-gray-800">Cosy Hideaway kenya</a>
+                <div class="flex items-center space-x-4">
+                    <a href="/tenant/dashboard" class="text-sm text-gray-700 hover:text-gray-900">Dashboard</a>
+                    <a href="/logout" class="text-sm text-gray-700 hover:text-gray-900">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">My Bookings</h1>
+            <p class="text-gray-600 mt-2">View all your booking history and upcoming reservations</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-green-50 text-green-800 border border-green-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if bookings %}
+        <div class="grid grid-cols-1 gap-6">
+            {% for booking in bookings %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="md:flex">
+                    <!-- Property Image -->
+                    <div class="md:w-48 flex-shrink-0">
+                        {% if booking.images and booking.images|length > 0 %}
+                        <img src="/{{ booking.images[0] }}" alt="{{ booking.property_title }}" class="w-full h-48 md:h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-48 md:h-full bg-gray-200 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Booking Details -->
+                    <div class="flex-1 p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ booking.property_title }}</h3>
+                                <p class="text-sm text-gray-600 mb-4">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    {{ booking.property_city }}{% if booking.property_address %}, {{ booking.property_address }}{% endif %}
+                                </p>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Booking Type</p>
+                                        <p class="font-medium text-gray-900 capitalize">{{ booking.booking_type }}</p>
+                                    </div>
+                                    {% if booking.start_date %}
+                                    <div>
+                                        <p class="text-gray-500">{% if booking.booking_type == 'airbnb' %}Check-in{% else %}Start Date{% endif %}</p>
+                                        <p class="font-medium text-gray-900">{{ booking.start_date.strftime('%b %d, %Y') if booking.start_date else 'N/A' }}</p>
+                                    </div>
+                                    {% endif %}
+                                    {% if booking.end_date %}
+                                    <div>
+                                        <p class="text-gray-500">{% if booking.booking_type == 'airbnb' %}Check-out{% else %}End Date{% endif %}</p>
+                                        <p class="font-medium text-gray-900">{{ booking.end_date.strftime('%b %d, %Y') if booking.end_date else 'N/A' }}</p>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <p class="text-gray-500">Price</p>
+                                        <p class="font-medium text-gray-900">KSH {{ "{:,.0f}".format(booking.property_price) }}</p>
+                                    </div>
+                                </div>
+                                
+                                {% if booking.message %}
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-500">Your Message:</p>
+                                    <p class="text-sm text-gray-700">{{ booking.message }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Status Badge -->
+                            <div class="ml-4">
+                                <span class="px-3 py-1 text-xs font-semibold rounded-full 
+                                    {% if booking.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif booking.status == 'confirmed' %}bg-green-100 text-green-800
+                                    {% elif booking.status == 'completed' %}bg-blue-100 text-blue-800
+                                    {% elif booking.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ booking.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between">
+                            <p class="text-xs text-gray-500">Booked on {{ booking.created_at.strftime('%B %d, %Y at %I:%M %p') if booking.created_at else 'N/A' }}</p>
+                            <a href="/property/{{ booking.property_id }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View Property →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Bookings Yet</h3>
+            <p class="text-gray-600 mb-6">You haven't made any bookings yet. Start exploring our properties!</p>
+            <a href="/properties" class="inline-block bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-900 font-medium transition">
+                Browse Properties
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+

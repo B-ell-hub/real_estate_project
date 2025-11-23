@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Property - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .sidebar-link:hover {
+            background-color: #e5e7eb;
+        }
+        .sidebar-link.active:hover {
+            background-color: #2563eb;
+        }
+        #airbnbFields {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .image-preview {
+            position: relative;
+        }
+        .image-preview img {
+            transition: transform 0.2s;
+        }
+        .image-preview:hover img {
+            transform: scale(1.05);
+        }
+        .primary-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg lg:shadow-none">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                    <button id="sidebar-close" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                                {{ user.username[0].upper() if user else 'A' }}
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">{{ (user.full_name or user.username) if user else 'Admin' }}</p>
+                            <p class="text-xs text-gray-500">{{ (user.role|title) if user and user.role else 'Administrator' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+                    {% if user and user.role == 'admin' %}
+                    <a href="/admin/dashboard" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/admin/properties" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link active flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/admin/users" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Users Management
+                    </a>
+                    {% else %}
+                    <a href="/manager/dashboard" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/manager/properties" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link active flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/manager/bookings" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Bookings
+                    </a>
+                    <a href="/manager/rentals" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                        </svg>
+                        Rentals
+                    </a>
+                    <a href="/manager/maintenance" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Maintenance
+                    </a>
+                    {% endif %}
+                    <a href="/properties" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        View Site
+                    </a>
+                    <div class="pt-4 border-t border-gray-200">
+                        {% if user and user.role == 'manager' %}
+                        <a href="/change-password" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Change Password
+                        </a>
+                        {% endif %}
+                        <a href="/logout" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-red-600 rounded-lg">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg border-b border-gray-700">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <button id="sidebar-toggle" class="lg:hidden text-gray-300 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-blue-600 p-2 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-bold text-white">Post New Property</h1>
+                    </div>
+                    <div></div>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-gray-50 p-4 sm:p-6 lg:p-8">
+                <div class="max-w-6xl mx-auto">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="mb-6 p-4 rounded-xl border-2 shadow-md {% if category == 'error' %}bg-red-50 text-red-800 border-red-300{% else %}bg-green-50 text-green-800 border-green-300{% endif %}">
+                                <div class="flex items-center space-x-2">
+                                    {% if category == 'error' %}
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    {% else %}
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    {% endif %}
+                                    <span class="font-medium">{{ message }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/post-property" enctype="multipart/form-data" id="propertyForm">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column: Form Fields -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <!-- Property Type -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <div class="bg-blue-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                            </svg>
+                                        </div>
+                                        <label class="block text-base font-bold text-gray-800">
+                                            Property Type <span class="text-red-500">*</span>
+                                        </label>
+                                    </div>
+                                    <select name="property_type" id="property_type" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition font-medium">
+                                        <option value="">Select Property Type</option>
+                                        <option value="sale">🏠 For Sale</option>
+                                        <option value="rent">🏘️ For Rent</option>
+                                        <option value="airbnb">🏨 AirBnB</option>
+                                    </select>
+                                </div>
+
+                                <!-- Basic Information -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-6 pb-4 border-b border-gray-200">
+                                        <div class="bg-green-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">Basic Information</h3>
+                                    </div>
+                                    
+                                    <div class="mb-5">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Title <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="title" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="e.g., Beautiful 3BR House in Downtown">
+                                    </div>
+
+                                    <div class="mb-5">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Description <span class="text-red-500">*</span>
+                                        </label>
+                                        <textarea name="description" required rows="5" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition placeholder-gray-400" placeholder="Describe your property in detail..."></textarea>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                                💰 Price (KSH) <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="number" name="price" required step="0.01" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="0.00">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">🛏️ Bedrooms</label>
+                                            <input type="number" name="bedrooms" min="0" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="0">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">🚿 Bathrooms</label>
+                                            <input type="number" name="bathrooms" min="0" step="0.5" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            📦 Units Available <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" name="units_available" required min="1" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="1">
+                                    </div>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-6 pb-4 border-b border-gray-200">
+                                        <div class="bg-purple-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">Location</h3>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                                🏙️ City <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="city" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="City">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">📍 State</label>
+                                            <input type="text" name="state" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="State">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AirBnB Specific Fields -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow" id="airbnbFields">
+                                    <div class="flex items-center space-x-2 mb-6 pb-4 border-b border-gray-200">
+                                        <div class="bg-yellow-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">AirBnB Details</h3>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">🕐 Check-in Time</label>
+                                            <input type="time" name="check_in" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">🕐 Check-out Time</label>
+                                            <input type="time" name="check_out" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">👥 Max Guests</label>
+                                            <input type="number" name="max_guests" min="1" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Amenities -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-6 pb-4 border-b border-gray-200">
+                                        <div class="bg-indigo-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">Amenities</h3>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">✨ Amenities (comma-separated)</label>
+                                        <input type="text" name="amenities" class="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400" placeholder="e.g., WiFi, Parking, Pool, Gym">
+                                        <p class="text-sm text-gray-500 mt-2 flex items-center space-x-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span>Separate multiple amenities with commas</span>
+                                        </p>
+                                    </div>
+
+                                    <!-- Featured Property Option -->
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <label class="flex items-center space-x-3 cursor-pointer group">
+                                            <input type="checkbox" name="featured" value="1" class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer transition">
+                                            <div class="flex-1">
+                                                <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition">⭐ Mark as Featured Property</span>
+                                                <p class="text-xs text-gray-500 mt-1">Featured properties appear first in listings and on the homepage</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Image Upload & Preview -->
+                            <div class="lg:col-span-1 space-y-6">
+                                <!-- Image Upload Section -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 sticky top-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-6 pb-4 border-b border-gray-200">
+                                        <div class="bg-pink-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">Property Images</h3>
+                                    </div>
+                                    
+                                    <!-- Upload Area -->
+                                    <div class="mb-4">
+                                        <label for="file-upload" class="block w-full">
+                                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer transform hover:scale-[1.02]">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                </svg>
+                                                <p class="text-sm text-gray-700 font-semibold">📸 Click to upload images</p>
+                                                <p class="text-xs text-gray-500 mt-1">PNG, JPG, JPEG, GIF, WEBP</p>
+                                            </div>
+                                            <input id="file-upload" name="images" type="file" multiple accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+                                        </label>
+                                    </div>
+
+                                    <!-- Primary Image Display -->
+                                    <div id="primaryImageContainer" class="mb-4 hidden">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Primary Image</label>
+                                        <div class="border-2 border-blue-500 rounded-lg overflow-hidden">
+                                            <img id="primaryImagePreview" src="" alt="Primary" class="w-full h-48 object-cover">
+                                        </div>
+                                    </div>
+
+                                    <!-- Image Gallery Thumbnails -->
+                                    <div id="imageGallery" class="space-y-2 max-h-96 overflow-y-auto">
+                                        <p class="text-sm text-gray-500 text-center py-4" id="noImagesText">No images uploaded yet</p>
+                                    </div>
+                                </div>
+
+                                <!-- View Details Section -->
+                                <div class="bg-white rounded-xl shadow-md border-2 border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                                    <div class="flex items-center space-x-2 mb-4">
+                                        <div class="bg-teal-100 p-2 rounded-lg">
+                                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-gray-800">Preview</h3>
+                                    </div>
+                                    <div id="viewDetailsGallery" class="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                                        <p class="text-sm text-gray-500 text-center col-span-3 py-4" id="noDetailsText">Upload images to see preview</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-8 flex justify-end space-x-4">
+                            <a href="{% if user and user.role == 'admin' %}/admin/dashboard{% else %}/manager/dashboard{% endif %}" class="px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold transition transform hover:scale-105">
+                                Cancel
+                            </a>
+                            <button type="submit" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-bold transition shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Post Property</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+        
+        <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    </div>
+    
+    <script>
+        let selectedImages = [];
+        let primaryImageIndex = 0;
+
+        // Sidebar toggle
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        // Toggle AirBnB fields
+        function toggleAirbnbFields() {
+            const propertyTypeSelect = document.getElementById('property_type');
+            const airbnbFields = document.getElementById('airbnbFields');
+            
+            if (propertyTypeSelect && airbnbFields) {
+                const propertyType = propertyTypeSelect.value;
+                if (propertyType === 'airbnb') {
+                    airbnbFields.style.display = 'block';
+                } else {
+                    airbnbFields.style.display = 'none';
+                }
+            }
+        }
+        
+        const propertyTypeSelect = document.getElementById('property_type');
+        if (propertyTypeSelect) {
+            propertyTypeSelect.addEventListener('change', toggleAirbnbFields);
+        }
+
+        // Handle file selection
+        function handleFileSelect(event) {
+            if (!event || !event.target || !event.target.files) {
+                return;
+            }
+            
+            const files = Array.from(event.target.files);
+            
+            files.forEach(file => {
+                if (file && file.type && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (e && e.target && e.target.result) {
+                            selectedImages.push({
+                                file: file,
+                                preview: e.target.result
+                            });
+                            updateImageGallery();
+                        }
+                    };
+                    reader.onerror = function() {
+                        console.error('Error reading file:', file.name);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Update image gallery
+        function updateImageGallery() {
+            const gallery = document.getElementById('imageGallery');
+            const primaryContainer = document.getElementById('primaryImageContainer');
+            const primaryPreview = document.getElementById('primaryImagePreview');
+            const viewDetailsGallery = document.getElementById('viewDetailsGallery');
+            const noImagesText = document.getElementById('noImagesText');
+            const noDetailsText = document.getElementById('noDetailsText');
+
+            if (selectedImages.length === 0) {
+                if (noImagesText) noImagesText.style.display = 'block';
+                if (noDetailsText) noDetailsText.style.display = 'block';
+                if (primaryContainer) primaryContainer.classList.add('hidden');
+                return;
+            }
+
+            if (noImagesText) noImagesText.style.display = 'none';
+            if (noDetailsText) noDetailsText.style.display = 'none';
+            if (primaryContainer) primaryContainer.classList.remove('hidden');
+
+            // Update primary image
+            if (primaryPreview && selectedImages.length > 0 && selectedImages[primaryImageIndex]) {
+                primaryPreview.src = selectedImages[primaryImageIndex].preview;
+            }
+
+            // Update thumbnail gallery
+            if (gallery) {
+                gallery.innerHTML = '';
+                selectedImages.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = `image-preview relative border-2 rounded-lg overflow-hidden cursor-pointer ${index === primaryImageIndex ? 'border-blue-500' : 'border-gray-200'}`;
+                    div.innerHTML = `
+                        <img src="${img.preview}" alt="Thumbnail ${index + 1}" class="w-full h-20 object-cover">
+                        ${index === primaryImageIndex ? '<div class="primary-badge">Primary</div>' : ''}
+                        <button type="button" onclick="setPrimaryImage(${index})" class="absolute inset-0 w-full h-full bg-black bg-opacity-0 hover:bg-opacity-30 transition flex items-center justify-center">
+                            <span class="text-white text-xs font-medium opacity-0 hover:opacity-100">Set Primary</span>
+                        </button>
+                    `;
+                    gallery.appendChild(div);
+                });
+            }
+
+            // Update view details gallery
+            if (viewDetailsGallery) {
+                viewDetailsGallery.innerHTML = '';
+                selectedImages.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = `image-preview relative border rounded overflow-hidden ${index === primaryImageIndex ? 'border-blue-500 border-2' : 'border-gray-200'}`;
+                    div.innerHTML = `
+                        <img src="${img.preview}" alt="Image ${index + 1}" class="w-full h-16 object-cover">
+                        ${index === primaryImageIndex ? '<div class="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">P</div>' : ''}
+                    `;
+                    viewDetailsGallery.appendChild(div);
+                });
+            }
+        }
+
+        // Set primary image
+        function setPrimaryImage(index) {
+            if (index >= 0 && index < selectedImages.length) {
+                primaryImageIndex = index;
+                updateImageGallery();
+            }
+        }
+
+        // Update file input to include all selected images
+        const propertyForm = document.getElementById('propertyForm');
+        if (propertyForm) {
+            propertyForm.addEventListener('submit', function(e) {
+                const fileInput = document.getElementById('file-upload');
+                if (fileInput && selectedImages.length > 0) {
+                    const dataTransfer = new DataTransfer();
+                    
+                    selectedImages.forEach(img => {
+                        if (img && img.file) {
+                            dataTransfer.items.add(img.file);
+                        }
+                    });
+                    
+                    fileInput.files = dataTransfer.files;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

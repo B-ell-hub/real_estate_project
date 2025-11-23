@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentals Management - Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .sidebar-link:hover {
+            background-color: #e5e7eb;
+        }
+        .sidebar-link.active:hover {
+            background-color: #2563eb;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar fixed lg:static inset-y-0 left-0 z-50 w-56 sm:w-64 bg-white shadow-lg lg:shadow-none">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200">
+                    <a href="/" class="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                    <button id="sidebar-close" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- User Info -->
+                <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                                {{ user.username[0].upper() }}
+                            </div>
+                </div>
+                        <div class="ml-2 sm:ml-3">
+                            <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ user.full_name or user.username }}</p>
+                            <p class="text-xs text-gray-500">{% if user and user.role %}{{ user.role|title }}{% else %}Manager{% endif %}</p>
+                </div>
+            </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex-1 px-2 sm:px-4 py-3 sm:py-4 space-y-1 overflow-y-auto">
+                    <a href="/manager/dashboard" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/manager/properties" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/manager/bookings" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Bookings
+                    </a>
+                    <a href="/manager/rentals" class="sidebar-link active flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                        </svg>
+                        Rentals
+                    </a>
+                    <a href="/manager/reports?type=vacate&status=all" class="sidebar-link flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Vacate Notices
+                        </div>
+                    </a>
+                    <a href="/manager/maintenance" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Maintenance
+                    </a>
+                    <a href="/properties" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        View Site
+                    </a>
+                    <div class="pt-4 border-t border-gray-200">
+                        <a href="/change-password" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Change Password
+                        </a>
+                        <a href="/logout" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-red-600 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-800">Rentals Management</h1>
+                    <div></div>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:px-8">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-800">Active Rentals</h2>
+                            <p class="text-sm text-gray-500">Track tenants, leases, and payment history</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="/manager/rentals/assign-new" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium">
+                                + Assign New Tenant
+                            </a>
+                            <a href="/manager/bookings" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Assign from Booking →</a>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        {% if rentals %}
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rental</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lease</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Financials</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for rental in rentals %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-semibold text-gray-900">{{ rental.property_title }}</p>
+                                        <p class="text-xs text-gray-500">{{ rental.property_address or '' }}{% if rental.property_address %}, {% endif %}{{ rental.property_city }}</p>
+                                        {% if rental.building_name or rental.block_number or rental.unit_number or rental.floor_number or rental.door_number %}
+                                        <div class="mt-2 pt-2 border-t border-gray-200">
+                                            <p class="text-xs font-medium text-gray-700">Unit Details:</p>
+                                            <div class="text-xs text-gray-600 mt-1 space-y-0.5">
+                                                {% if rental.building_name %}<p>🏢 Building: {{ rental.building_name }}</p>{% endif %}
+                                                {% if rental.block_number %}<p>📍 Block: {{ rental.block_number }}</p>{% endif %}
+                                                {% if rental.unit_number %}<p>🏠 Unit: {{ rental.unit_number }}</p>{% endif %}
+                                                {% if rental.floor_number %}<p>📊 Floor: {{ rental.floor_number }}</p>{% endif %}
+                                                {% if rental.door_number %}<p>🚪 Door: {{ rental.door_number }}</p>{% endif %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        <p class="text-xs text-gray-500 mt-2">Rent: KSH {{ "{:,.0f}".format(rental.rent_amount) }}</p>
+                                        <p class="text-xs text-gray-400">Type: {{ rental.property_type|title }}</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-medium text-gray-900">{{ rental.tenant_name or rental.tenant_username }}</p>
+                                        <p class="text-xs text-gray-500">{{ rental.tenant_email }}</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        <p>Start: {{ rental.lease_start.strftime('%Y-%m-%d') if rental.lease_start else '—' }}</p>
+                                        <p>End: {{ rental.lease_end.strftime('%Y-%m-%d') if rental.lease_end else 'Open' }}</p>
+                                        <p class="text-xs text-gray-500">Cycle: {{ rental.payment_cycle|title }}</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        <p>Total Paid: <span class="font-semibold">KSH {{ "{:,.0f}".format(rental.total_paid or 0) }}</span></p>
+                                        <p>Next Due: {{ rental.next_due_date.strftime('%Y-%m-%d') if rental.next_due_date else '—' }}</p>
+                                        <p class="text-xs text-gray-500">Deposit: KSH {{ "{:,.0f}".format(rental.deposit_amount or 0) }}</p>
+                                        <div class="mt-2 flex gap-2">
+                                            <button onclick="openPaymentModal({{ rental.id }}, {{ rental.rent_amount }}, '{{ rental.next_due_date.strftime('%Y-%m-%d') if rental.next_due_date else today }}')" class="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition font-medium">
+                                                💰 Record Payment
+                                            </button>
+                                            <a href="/manager/rentals/{{ rental.id }}/payments" class="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium">
+                                                📋 View History
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if rental.status == 'active' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ rental.status|title }}
+                                        </span>
+                                        <p class="text-xs text-gray-500 mt-2">Open reports: {{ rental.open_reports or 0 }}</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                            </svg>
+                            <p class="mt-4 text-gray-600">No active rentals yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    </div>
+    
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-900">Record Payment</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form id="paymentForm" method="POST" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Amount (KSH) *</label>
+                    <input type="number" step="0.01" name="amount" id="paymentAmount" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Date *</label>
+                    <input type="date" name="payment_date" id="paymentDate" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                    <select name="payment_method" id="paymentMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="mpesa">M-Pesa</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="cash">Cash</option>
+                        <option value="cheque">Cheque</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Reference/Transaction ID</label>
+                    <input type="text" name="reference" id="paymentReference" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., MPX123456789">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                    <textarea name="notes" id="paymentNotes" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Optional notes about this payment"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closePaymentModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium">Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        // Payment Modal
+        function openPaymentModal(rentalId, rentAmount, nextDueDate) {
+            document.getElementById('paymentForm').action = `/manager/rentals/${rentalId}/payments`;
+            document.getElementById('paymentAmount').value = rentAmount || '';
+            document.getElementById('paymentDate').value = nextDueDate || '{{ today }}';
+            document.getElementById('paymentMethod').value = 'mpesa';
+            document.getElementById('paymentReference').value = '';
+            document.getElementById('paymentNotes').value = '';
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+        
+        // Close modal on outside click
+        document.getElementById('paymentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePaymentModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

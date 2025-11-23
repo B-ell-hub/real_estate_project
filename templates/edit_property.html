@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Property - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .sidebar-link:hover {
+            background-color: #e5e7eb;
+        }
+        .sidebar-link.active:hover {
+            background-color: #2563eb;
+        }
+        #airbnbFields {
+            display: {% if property.property_type == 'airbnb' %}block{% else %}none{% endif %};
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg lg:shadow-none">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                    <button id="sidebar-close" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                                {{ user.username[0].upper() if user else 'A' }}
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">{{ (user.full_name or user.username) if user else 'Admin' }}</p>
+                            <p class="text-xs text-gray-500">Administrator</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+                    <a href="/admin/dashboard" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/admin/properties" class="sidebar-link active flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/admin/users" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Users Management
+                    </a>
+                    <a href="/properties" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        View Site
+                    </a>
+                    <div class="pt-4 border-t border-gray-200">
+                        <a href="/logout" class="sidebar-link flex items-center px-4 py-3 text-sm font-medium text-red-600 rounded-lg">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-800">Edit Property</h1>
+                    <div></div>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
+                <div class="max-w-6xl mx-auto">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="mb-6 p-4 rounded-lg border {% if category == 'error' %}bg-red-50 text-red-700 border-red-200{% else %}bg-green-50 text-green-700 border-green-200{% endif %}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/admin/properties/{{ property.id }}/edit" enctype="multipart/form-data" id="propertyForm">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Left Column: Form Fields -->
+                            <div class="lg:col-span-2 space-y-6">
+                                <!-- Property Type -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        Property Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="property_type" id="property_type" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="sale" {% if property.property_type == 'sale' %}selected{% endif %}>For Sale</option>
+                                        <option value="rent" {% if property.property_type == 'rent' %}selected{% endif %}>For Rent</option>
+                                        <option value="airbnb" {% if property.property_type == 'airbnb' %}selected{% endif %}>AirBnB</option>
+                                    </select>
+                                </div>
+
+                                <!-- Basic Information -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Basic Information</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Title <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" name="title" required value="{{ property.title }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Description <span class="text-red-500">*</span>
+                                        </label>
+                                        <textarea name="description" required rows="5" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none">{{ property.description }}</textarea>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Price <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="number" name="price" required step="0.01" value="{{ property.price }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Bedrooms</label>
+                                            <input type="number" name="bedrooms" min="0" value="{{ property.bedrooms or '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Bathrooms</label>
+                                            <input type="number" name="bathrooms" min="0" step="0.5" value="{{ property.bathrooms or '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Units Available <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" name="units_available" required min="1" value="{{ property.units_available or 1 }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <select name="status" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="active" {% if property.status == 'active' %}selected{% endif %}>Active</option>
+                                            <option value="sold" {% if property.status == 'sold' %}selected{% endif %}>Sold</option>
+                                            <option value="rented" {% if property.status == 'rented' %}selected{% endif %}>Rented</option>
+                                            <option value="inactive" {% if property.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Location</h3>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                City <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="city" required value="{{ property.city }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                                            <input type="text" name="state" value="{{ property.state or '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AirBnB Specific Fields -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6" id="airbnbFields">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">AirBnB Details</h3>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-in Time</label>
+                                            <input type="time" name="check_in" value="{{ property.check_in if property.check_in else '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Check-out Time</label>
+                                            <input type="time" name="check_out" value="{{ property.check_out if property.check_out else '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Max Guests</label>
+                                            <input type="number" name="max_guests" min="1" value="{{ property.max_guests or '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Amenities -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Amenities</h3>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Amenities (comma-separated)</label>
+                                        <input type="text" name="amenities" value="{{ property.amenities or '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., WiFi, Parking, Pool, Gym">
+                                        <p class="text-sm text-gray-500 mt-2">Separate multiple amenities with commas</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Existing Images & Upload -->
+                            <div class="lg:col-span-1 space-y-6">
+                                <!-- Existing Images -->
+                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Existing Images</h3>
+                                    {% if existing_images %}
+                                    <div class="space-y-3 mb-4">
+                                        {% for img in existing_images %}
+                                        <div class="relative border border-gray-200 rounded-lg overflow-hidden">
+                                            <img src="/static/{{ img.image_path }}" alt="Property image" class="w-full h-32 object-cover">
+                                            <label class="absolute top-2 right-2 flex items-center space-x-2 bg-white px-2 py-1 rounded shadow">
+                                                <input type="checkbox" name="delete_images" value="{{ img.id }}" class="rounded">
+                                                <span class="text-xs text-red-600">Delete</span>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <p class="text-sm text-gray-500 text-center py-4">No existing images</p>
+                                    {% endif %}
+                                    
+                                    <!-- Upload New Images -->
+                                    <div class="mt-4">
+                                        <label for="file-upload" class="block w-full">
+                                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 hover:bg-blue-50 transition cursor-pointer">
+                                                <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                </svg>
+                                                <p class="text-sm text-gray-600 font-medium">Add More Images</p>
+                                                <p class="text-xs text-gray-500 mt-1">PNG, JPG, JPEG, GIF, WEBP</p>
+                                            </div>
+                                            <input id="file-upload" name="images" type="file" multiple accept="image/*" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-6 flex justify-end space-x-4">
+                            <a href="/admin/properties" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition">Cancel</a>
+                            <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition shadow-sm hover:shadow-md">Update Property</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+        
+        <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    </div>
+    
+    <script>
+        // Sidebar toggle
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        
+        // Toggle AirBnB fields
+        function toggleAirbnbFields() {
+            const propertyType = document.getElementById('property_type').value;
+            const airbnbFields = document.getElementById('airbnbFields');
+            
+            if (propertyType === 'airbnb') {
+                airbnbFields.style.display = 'block';
+            } else {
+                airbnbFields.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('property_type').addEventListener('change', toggleAirbnbFields);
+    </script>
+</body>
+</html>
+

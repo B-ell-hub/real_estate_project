@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosy Hideaway kenya - Home</title>
+    <link rel="icon" type="image/jpeg" href="/static/uploads/hero.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .property-card:hover {
+            transform: translateY(-4px);
+            transition: transform 0.3s ease;
+        }
+        .hero-section {
+            background-image: url('/static/uploads/hero.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: scroll;
+            min-height: 70vh;
+            height: 70vh;
+            max-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            -webkit-background-size: cover !important;
+            -moz-background-size: cover !important;
+            -o-background-size: cover !important;
+            background-size: cover !important;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+            z-index: 1;
+        }
+        .hero-section > div {
+            position: relative;
+            z-index: 2;
+        }
+        @media (min-width: 1920px) {
+            .hero-section {
+                background-size: cover !important;
+                background-position: center center !important;
+                background-color: #0a0a0a;
+                min-height: 80vh;
+                height: 80vh;
+                max-height: 80vh;
+                -webkit-background-size: cover !important;
+                -moz-background-size: cover !important;
+                -o-background-size: cover !important;
+            }
+            .hero-section::before {
+                background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+            }
+        }
+        @media (min-width: 2560px) {
+            .hero-section {
+                min-height: 90vh;
+            }
+        }
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                </div>
+                <div class="hidden md:flex space-x-4 items-center">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/properties" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Properties</a>
+                    <a href="/about" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    {% if user and user.role == 'admin' %}
+                    <a href="/post-property" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Post Property</a>
+                    {% endif %}
+                    {% if user %}
+                    <span class="text-gray-700 px-3 py-2 text-sm font-medium hidden lg:inline">Welcome, {{ user.username }}</span>
+                    {% if user.role == 'admin' %}
+                    <a href="/admin/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                    {% elif user.role == 'manager' %}
+                    <a href="/manager/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                    {% else %}
+                    <a href="/tenant/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                    {% endif %}
+                    <a href="/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                    {% else %}
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                    <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Register</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-blue-600 p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <a href="/" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                <a href="/properties" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Properties</a>
+                <a href="/about" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                <a href="/contact" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                {% if user and user.role == 'admin' %}
+                <a href="/post-property" class="block bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Post Property</a>
+                {% endif %}
+                {% if user %}
+                <span class="block text-gray-700 px-3 py-2 text-sm font-medium">Welcome, {{ user.username }}</span>
+                {% if user.role == 'admin' %}
+                <a href="/admin/dashboard" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                {% elif user.role == 'manager' %}
+                <a href="/manager/dashboard" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                {% else %}
+                <a href="/tenant/dashboard" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                {% endif %}
+                <a href="/logout" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                {% else %}
+                <a href="/login" class="block text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                <a href="/register" class="block bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white" style="background-image: url('/static/uploads/hero.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">Find Your Perfect Property</h1>
+            <p class="text-lg sm:text-xl md:text-2xl mb-8 drop-shadow-md">Buy, Rent, or Book your dream property</p>
+            <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-4">
+                <a href="/properties?type=sale" class="bg-white text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">Properties for Sale</a>
+                <a href="/properties?type=rent" class="bg-white text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">Properties for Rent</a>
+                <a href="/properties?type=airbnb" class="bg-white text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">AirBnB Listings</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Properties -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">Featured Properties</h2>
+        
+        {% if properties %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {% for property in properties %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden property-card">
+                <a href="/property/{{ property.id }}">
+                    <div class="h-48 sm:h-56 bg-gray-200 overflow-hidden relative">
+                        {% if property.images and property.images|length > 0 %}
+                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+                        {% endif %}
+                        {% if user %}
+                        <button onclick="event.preventDefault(); toggleFavorite({{ property.id }}, this)" class="absolute top-3 right-3 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition z-10 favorite-btn-{{ property.id }}" title="Add to favorites">
+                            <svg class="w-5 h-5 text-gray-600 favorite-icon-{{ property.id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="p-4 sm:p-5">
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-800 flex-1">{{ property.title }}</h3>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded whitespace-nowrap">
+                                {% if property.property_type == 'sale' %}For Sale
+                                {% elif property.property_type == 'rent' %}For Rent
+                                {% else %}AirBnB{% endif %}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-2 truncate">{{ property.address }}, {{ property.city }}</p>
+                        <div class="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 mb-3 gap-2">
+                            {% if property.bedrooms %}<span>🛏️ {{ property.bedrooms }} Beds</span>{% endif %}
+                            {% if property.bathrooms %}<span>🚿 {{ property.bathrooms }} Baths</span>{% endif %}
+                            {% if property.area %}<span>📐 {{ property.area }} sqft</span>{% endif %}
+                        </div>
+                        {% if property.property_type in ['rent', 'airbnb'] %}
+                        <div class="mb-3">
+                            <p class="text-xs text-gray-500 mb-1">Units Available</p>
+                            <p class="text-xs font-medium {% if property.units_available == 0 or property.status in ['rented', 'sold'] %}text-red-600{% else %}text-green-600{% endif %}">
+                                {% if property.status == 'sold' %}Sold - Not Available
+                                {% elif property.status == 'rented' %}Rented - Not Available
+                                {% elif property.units_available == 0 %}Fully Booked - Not Available
+                                {% else %}{{ property.units_available or 0 }} Available{% endif %}
+                            </p>
+                        </div>
+                        {% elif property.status in ['sold', 'rented'] %}
+                        <div class="mb-3">
+                            <p class="text-xs text-gray-500 mb-1">Status</p>
+                            <p class="text-xs font-medium text-red-600">
+                                {% if property.status == 'sold' %}Sold - Not Available
+                                {% else %}Rented - Not Available{% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl sm:text-2xl font-bold text-blue-600">KSH {{ "{:,.0f}".format(property.price) }}</span>
+                            {% if property.property_type == 'airbnb' %}
+                            <span class="text-xs sm:text-sm text-gray-500">per night</span>
+                            {% elif property.property_type == 'rent' %}
+                            <span class="text-xs sm:text-sm text-gray-500">per month</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <p class="text-gray-600 text-base sm:text-lg">No properties available at the moment.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-white py-8 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="text-center p-4 sm:p-6 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="text-4xl sm:text-5xl mb-4">🏠</div>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2">Properties for Sale</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Find your dream home from our extensive collection of properties for sale.</p>
+                </div>
+                <div class="text-center p-4 sm:p-6 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="text-4xl sm:text-5xl mb-4">🔑</div>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2">Properties for Rent</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Browse long-term rental properties that suit your lifestyle and budget.</p>
+                </div>
+                <div class="text-center p-4 sm:p-6 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="text-4xl sm:text-5xl mb-4">✈️</div>
+                    <h3 class="text-lg sm:text-xl font-semibold mb-2">AirBnB Listings</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Book short-term stays in unique properties around the world.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex flex-wrap justify-center gap-4 mb-4">
+                    <a href="/terms" class="text-sm text-gray-300 hover:text-white transition underline">Terms of Service</a>
+                    <span class="text-gray-500">|</span>
+                    <a href="/privacy" class="text-sm text-gray-300 hover:text-white transition underline">Privacy Policy</a>
+                </div>
+                <p class="text-sm sm:text-base mb-2">&copy; 2025 Cosy Hideaway kenya. All rights reserved.</p>
+                <p class="text-xs sm:text-sm text-gray-400">
+                    Developed by <a href="https://epicedgecreative.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 underline transition font-medium">EpicEdge Creative</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Ensure hero image displays correctly in all browsers (especially Chrome)
+        function ensureHeroImage() {
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                // Ensure background properties are set correctly for Chrome
+                const timestamp = new Date().getTime();
+                const imageUrl = `/static/uploads/hero.jpg?v=${timestamp}`;
+                
+                // Preload image to ensure it's ready before applying
+                const img = new Image();
+                img.onload = function() {
+                    // Apply background with all browser prefixes
+                    heroSection.style.setProperty('background-image', `url('${imageUrl}')`, 'important');
+                    heroSection.style.setProperty('background-size', 'cover', 'important');
+                    heroSection.style.setProperty('background-position', 'center center', 'important');
+                    heroSection.style.setProperty('background-repeat', 'no-repeat', 'important');
+                    
+                    // Chrome-specific fixes
+                    heroSection.style.setProperty('-webkit-background-size', 'cover', 'important');
+                    heroSection.style.setProperty('-moz-background-size', 'cover', 'important');
+                    heroSection.style.setProperty('-o-background-size', 'cover', 'important');
+                    
+                    // Force Chrome to repaint
+                    heroSection.style.opacity = '0.99';
+                    setTimeout(function() {
+                        heroSection.style.opacity = '1';
+                    }, 10);
+                };
+                img.onerror = function() {
+                    console.warn('Hero image failed to load, using fallback');
+                };
+                img.src = imageUrl;
+            }
+        }
+        
+        // Run immediately if DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', ensureHeroImage);
+        } else {
+            // DOM already loaded, run immediately
+            setTimeout(ensureHeroImage, 0);
+        }
+        
+        // Also run on window load as fallback
+        window.addEventListener('load', function() {
+            setTimeout(ensureHeroImage, 100);
+        });
+    </script>
+</body>
+</html>
+

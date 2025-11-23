@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Property Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .sidebar-link:hover {
+            background-color: #e5e7eb;
+        }
+        .sidebar-link.active:hover {
+            background-color: #2563eb;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar fixed lg:static inset-y-0 left-0 z-50 w-56 sm:w-64 bg-white shadow-lg lg:shadow-none">
+            <div class="flex flex-col h-full">
+                <!-- Logo -->
+                <div class="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200">
+                    <a href="/" class="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                    <button id="sidebar-close" class="lg:hidden text-gray-500 hover:text-gray-700 p-2">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- User Info -->
+                <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                                {{ user.username[0].upper() }}
+                            </div>
+                        </div>
+                        <div class="ml-2 sm:ml-3">
+                            <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ user.full_name or user.username }}</p>
+                            <p class="text-xs text-gray-500">Administrator</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="flex-1 px-2 sm:px-4 py-3 sm:py-4 space-y-1 overflow-y-auto">
+                    <a href="/admin/dashboard" class="sidebar-link active flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/admin/properties" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/admin/bookings" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Bookings
+                    </a>
+                    <a href="/admin/rentals" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                        </svg>
+                        Rentals
+                    </a>
+                    <a href="/admin/reports" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Reports
+                    </a>
+                    <a href="/admin/reports?type=vacate&status=all" class="sidebar-link flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Vacate Notices
+                        </div>
+                        {% if stats.pending_vacate_notices and stats.pending_vacate_notices > 0 %}
+                        <span class="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[1.25rem] text-center">{{ stats.pending_vacate_notices }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="/admin/users" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Users Management
+                    </a>
+                    <a href="/admin/favorites" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                        All Favorites
+                    </a>
+                    <a href="/properties" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        View Site
+                    </a>
+                    <div class="pt-4 border-t border-gray-200">
+                        <a href="/change-password" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Change Password
+                        </a>
+                        <a href="/logout" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-red-600 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 md:px-6 lg:px-8">
+                    <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-700 p-2">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-lg sm:text-xl font-semibold text-gray-800">Admin Dashboard</h1>
+                    <div class="flex items-center space-x-2 sm:space-x-4">
+                    
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto bg-gray-100 p-3 sm:p-4 md:p-6 lg:p-8">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="mb-3 sm:mb-4 p-3 sm:p-4 rounded-lg text-sm {% if category == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Statistics Cards - Row 1 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Properties</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.total_properties or 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-green-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Active Properties</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.active_properties or 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-purple-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Users</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.total_users or 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-orange-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Bookings</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.total_bookings or 0 }}</p>
+                                {% if stats.pending_bookings and stats.pending_bookings > 0 %}
+                                <p class="text-xs text-orange-600 mt-1">{{ stats.pending_bookings }} pending</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics Cards - Row 2 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-indigo-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Active Rentals</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.active_rentals or 0 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-red-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Open Reports</p>
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ stats.open_reports or 0 }}</p>
+                                {% if stats.open_reports and stats.open_reports > 0 %}
+                                <a href="/admin/reports?status=open" class="text-xs text-red-600 hover:text-red-800 mt-1 block">View all →</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-emerald-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Revenue</p>
+                                <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">KSH {{ "{:,.0f}".format(stats.total_revenue or 0) }}</p>
+                                <p class="text-xs text-gray-500 mt-1">This month: KSH {{ "{:,.0f}".format(stats.monthly_revenue or 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-5 md:p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-teal-100 rounded-lg p-2 sm:p-3">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Property Types</p>
+                                <div class="flex flex-col space-y-1 mt-1">
+                                    <span class="text-xs text-gray-600">Sale: {{ stats.property_type_breakdown.get('sale', 0) }}</span>
+                                    <span class="text-xs text-gray-600">Rent: {{ stats.property_type_breakdown.get('rent', 0) }}</span>
+                                    <span class="text-xs text-gray-600">AirBnB: {{ stats.property_type_breakdown.get('airbnb', 0) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Alerts & Notifications -->
+                {% if stats.pending_bookings > 0 or stats.open_reports > 0 or expiring_leases|length > 0 %}
+                <div class="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Action Required</h3>
+                        </div>
+                    </div>
+                    <div class="mt-2 sm:mt-3 space-y-2">
+                        {% if stats.pending_bookings > 0 %}
+                        <a href="/admin/bookings?status=pending" class="flex items-center text-sm text-gray-700 hover:text-orange-700">
+                            <span class="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                            {{ stats.pending_bookings }} pending booking{{ 's' if stats.pending_bookings != 1 else '' }} need attention
+                        </a>
+                        {% endif %}
+                        {% if stats.open_reports > 0 %}
+                        <a href="/admin/reports?status=open" class="flex items-center text-sm text-gray-700 hover:text-orange-700">
+                            <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                            {{ stats.open_reports }} open report{{ 's' if stats.open_reports != 1 else '' }} need resolution
+                        </a>
+                        {% endif %}
+                        {% if expiring_leases|length > 0 %}
+                        <a href="/admin/rentals" class="flex items-center text-sm text-gray-700 hover:text-orange-700">
+                            <span class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                            {{ expiring_leases|length }} lease{{ 's' if expiring_leases|length != 1 else '' }} expiring soon
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Actions & Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-800">Quick Actions</h2>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                                <a href="/post-property" class="flex flex-col items-center justify-center p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+                                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mb-1 sm:mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-700 text-center">Post Property</span>
+                                </a>
+                                <a href="/admin/bookings" class="flex flex-col items-center justify-center p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition">
+                                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mb-1 sm:mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-700 text-center">View Bookings</span>
+                                </a>
+                                <a href="/admin/rentals" class="flex flex-col items-center justify-center p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition">
+                                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mb-1 sm:mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                                    </svg>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-700 text-center">Manage Rentals</span>
+                                </a>
+                                <a href="/admin/reports" class="flex flex-col items-center justify-center p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition">
+                                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 mb-1 sm:mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-xs sm:text-sm font-medium text-gray-700 text-center">View Reports</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Bookings -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-800">Recent Bookings</h2>
+                            <a href="/admin/bookings" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            {% if recent_bookings %}
+                            <div class="space-y-3">
+                                {% for booking in recent_bookings %}
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex-1 min-w-0 mr-2">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ booking.property_title }}</p>
+                                        <p class="text-xs text-gray-500 truncate">{{ booking.customer_name or booking.customer_username or 'Guest' }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ booking.created_at.strftime('%Y-%m-%d %H:%M') if booking.created_at else '' }}</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full flex-shrink-0
+                                        {% if booking.status == 'pending' %}bg-orange-100 text-orange-800
+                                        {% elif booking.status == 'confirmed' %}bg-green-100 text-green-800
+                                        {% elif booking.status == 'cancelled' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-sm text-gray-500 text-center py-4">No recent bookings</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Check-ins -->
+                <div class="mb-4 sm:mb-6">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                            <div>
+                                <h2 class="text-base sm:text-lg font-semibold text-gray-800">Upcoming Check-ins</h2>
+                                <p class="text-xs text-gray-500 mt-1">Confirmed bookings with check-in dates in the next 30 days</p>
+                            </div>
+                            <a href="/admin/bookings?status=confirmed" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            {% if upcoming_checkins %}
+                            <div class="space-y-3">
+                                {% for booking in upcoming_checkins %}
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <div class="flex-1 min-w-0 mr-2">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ booking.property_title }}</p>
+                                        <p class="text-xs text-gray-500 truncate">{{ booking.customer_name or 'Guest' }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">
+                                            {% if booking.booking_type %}{{ booking.booking_type|upper }} • {% endif %}
+                                            Check-in: {% if booking.start_date %}{{ booking.start_date.strftime('%b %d, %Y') }}{% else %}Date TBD{% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            {% if booking.days_until is not none %}{{ booking.days_until }}d{% else %}TBD{% endif %}
+                                        </span>
+                                        <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                            Confirmed
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="text-sm text-gray-500 text-center py-4">No upcoming check-ins in the next 30 days</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Reports & Additional Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                    <!-- Recent Reports -->
+                    {% if recent_reports %}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-800">Recent Reports</h2>
+                            <a href="/admin/reports" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <div class="space-y-3">
+                                {% for report in recent_reports %}
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex-1 min-w-0 mr-2">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ report.subject }}</p>
+                                        <p class="text-xs text-gray-500 truncate">{{ report.property_title }} • {{ report.tenant_name }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ report.created_at.strftime('%Y-%m-%d %H:%M') if report.created_at else '' }}</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full flex-shrink-0
+                                        {% if report.status == 'open' %}bg-orange-100 text-orange-800
+                                        {% elif report.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                        {% elif report.status == 'resolved' %}bg-green-100 text-green-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ report.status|replace('_', ' ')|title }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Upcoming Lease Expirations -->
+                    {% if expiring_leases %}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-800">Expiring Leases</h2>
+                            <a href="/admin/rentals" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <div class="space-y-3">
+                                {% for lease in expiring_leases %}
+                                <div class="p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ lease.property_title }}</p>
+                                    <p class="text-xs text-gray-600 mt-1 truncate">{{ lease.tenant_name }}</p>
+                                    <p class="text-xs text-yellow-700 font-medium mt-2">
+                                        Expires: {{ lease.lease_end.strftime('%B %d, %Y') if lease.lease_end else 'N/A' }}
+                                    </p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Recent User Registrations -->
+                    {% if recent_users %}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                            <h2 class="text-base sm:text-lg font-semibold text-gray-800">New Users</h2>
+                            <a href="/admin/users" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <div class="space-y-3">
+                                {% for user in recent_users %}
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex-1 min-w-0 mr-2">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ user.full_name or user.username }}</p>
+                                        <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '' }}</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 flex-shrink-0">
+                                        {{ user.role|title }}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Recent Properties -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-800">Recent Properties</h2>
+                        <a href="/admin/properties" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        {% if recent_properties %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                            {% for property in recent_properties %}
+                            <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all">
+                                <a href="/property/{{ property.id }}">
+                                    <div class="h-32 sm:h-40 bg-gray-200 overflow-hidden">
+                                        {% if property.images and property.images|length > 0 %}
+                                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                                        {% else %}
+                                        <div class="w-full h-full flex items-center justify-center text-gray-400 text-xs sm:text-sm">No Image</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="p-3 sm:p-4">
+                                        <h3 class="font-semibold text-gray-800 mb-1 text-xs sm:text-sm truncate">{{ property.title }}</h3>
+                                        <p class="text-xs text-gray-600 mb-2 truncate">{{ property.city }}</p>
+                                        <div class="flex justify-between items-center flex-wrap gap-1">
+                                            <span class="text-sm sm:text-base font-bold text-blue-600">KSH {{ "{:,.0f}".format(property.price) }}</span>
+                                            <span class="text-xs px-2 py-1 rounded {% if property.status == 'active' %}bg-green-100 text-green-800{% elif property.status == 'sold' %}bg-red-100 text-red-800{% elif property.status == 'rented' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                {{ property.status|title }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <p class="mt-4 text-gray-600">No properties found.</p>
+                            <a href="/post-property" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium">Post your first property</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    </div>
+    
+    <script>
+        // Sidebar toggle for mobile
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', openSidebar);
+        }
+        
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', closeSidebar);
+        }
+        
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', closeSidebar);
+        }
+        
+        // Set active sidebar link based on current URL
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

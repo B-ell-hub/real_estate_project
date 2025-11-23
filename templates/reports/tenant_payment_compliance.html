@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Compliance Report - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-link.active { background-color: #3b82f6; color: white; }
+        .sidebar-link:hover { background-color: #e5e7eb; }
+        .sidebar-link.active:hover { background-color: #2563eb; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .sidebar.open { transform: translateX(0); }
+        }
+        .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .table-wrapper table { min-width: 800px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen overflow-hidden">
+        <aside class="sidebar fixed lg:static inset-y-0 left-0 z-50 w-56 sm:w-64 bg-white shadow-lg lg:shadow-none">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 border-b border-gray-200">
+                    <a href="/" class="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                    <button id="sidebar-close" class="lg:hidden text-gray-500 hover:text-gray-700 p-2">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                            {{ user.username[0].upper() }}
+                        </div>
+                        <div class="ml-2 sm:ml-3">
+                            <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">{{ user.full_name or user.username }}</p>
+                            <p class="text-xs text-gray-500">Administrator</p>
+                        </div>
+                    </div>
+                </div>
+                <nav class="flex-1 px-2 sm:px-4 py-3 sm:py-4 space-y-1 overflow-y-auto">
+                    <a href="/admin/dashboard" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="/admin/bookings" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Bookings
+                    </a>
+                    <a href="/admin/rentals" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m-7 4h8a2 2 0 002-2V8a2 2 0 00-2-2H9l-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h2z"></path>
+                        </svg>
+                        Rentals
+                    </a>
+                    <a href="/admin/reports" class="sidebar-link active flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Reports
+                    </a>
+                    <a href="/admin/properties" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        All Properties
+                    </a>
+                    <a href="/post-property" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Post Property
+                    </a>
+                    <a href="/admin/users" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-700 rounded-lg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        Users Management
+                    </a>
+                    <div class="pt-4 border-t border-gray-200">
+                        <a href="/logout" class="sidebar-link flex items-center px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-red-600 rounded-lg">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm border-b border-gray-200">
+                <div class="flex items-center justify-between h-14 sm:h-16 px-3 sm:px-4 md:px-6 lg:px-8 gap-2 sm:gap-4">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                        <button id="sidebar-toggle" class="lg:hidden text-gray-500 hover:text-gray-700 p-1 flex-shrink-0">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                        <h1 class="text-base sm:text-lg md:text-xl font-bold text-gray-900 truncate">Payment Compliance Report</h1>
+                    </div>
+                    <a href="/admin/reports" class="text-xs sm:text-sm text-gray-600 hover:text-gray-900 whitespace-nowrap flex-shrink-0 px-2 sm:px-0">
+                        <span class="hidden sm:inline">← Back to Reports</span>
+                        <span class="sm:hidden">← Back</span>
+                    </a>
+                </div>
+            </header>
+            
+            <main class="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-gray-200">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-800">Payment Compliance Status</h2>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Tenant</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Property</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Rent Amount</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Next Due Date</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Paid</th>
+                                    <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Payments</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% if payment_compliance %}
+                                {% for tenant in payment_compliance %}
+                                <tr>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm font-medium text-gray-900">{{ tenant.full_name }}</div>
+                                        <div class="text-xs text-gray-500">{{ tenant.email }}</div>
+                                    </td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">{{ tenant.property_title }}</td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">KSH {{ "{:,.2f}".format(tenant.rent_amount) }}</td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                                        {{ tenant.next_due_date.strftime('%B %d, %Y') if tenant.next_due_date else 'N/A' }}
+                                    </td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full {% if tenant.payment_status == 'overdue' %}bg-red-100 text-red-800{% elif tenant.payment_status == 'due_soon' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                            {% if tenant.payment_status == 'overdue' %}Overdue ({{ tenant.days_until_due|abs }} days)
+                                            {% elif tenant.payment_status == 'due_soon' %}Due Soon ({{ tenant.days_until_due }} days)
+                                            {% else %}Current
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">KSH {{ "{:,.2f}".format(tenant.total_paid or 0) }}</td>
+                                    <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">{{ tenant.total_payments or 0 }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="px-3 sm:px-6 py-4 text-center text-xs sm:text-sm text-gray-500">No payment compliance data available</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <div id="sidebar-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    </div>
+    
+    <script>
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.remove('hidden'); }
+        function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.add('hidden'); }
+        
+        if (sidebarToggle) sidebarToggle.addEventListener('click', openSidebar);
+        if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+    </script>
+</body>
+</html>
+

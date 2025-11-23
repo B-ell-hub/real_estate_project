@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Cosy Hideaway kenya</title>
+    <link rel="icon" type="image/jpeg" href="/static/uploads/hero.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-section {
+            background-image: url('/static/uploads/hero.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">Cosy Hideaway kenya</a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-4 items-center">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
+                    <a href="/properties" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Properties</a>
+                    <a href="/about" class="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+                    {% if user and user.role == 'admin' %}
+                    <a href="/post-property" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Post Property</a>
+                    {% endif %}
+                    {% if user %}
+                    <span class="text-gray-700 px-3 py-2 text-sm font-medium">Welcome, {{ user.username }}</span>
+                    <a href="/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Logout</a>
+                    {% else %}
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
+                    <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">Register</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700 hover:text-blue-600 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden pb-4">
+                <div class="flex flex-col space-y-2">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                    <a href="/properties" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Properties</a>
+                    <a href="/about" class="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm font-medium">About</a>
+                    <a href="/contact" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    {% if user and user.role == 'admin' %}
+                    <a href="/post-property" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Post Property</a>
+                    {% endif %}
+                    {% if user %}
+                    <span class="text-gray-700 px-3 py-2 text-sm font-medium">Welcome, {{ user.username }}</span>
+                    <a href="/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                    {% else %}
+                    <a href="/login" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                    <a href="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white py-16 sm:py-24 relative">
+        <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg">About Cosy Hideaway kenya</h1>
+            <p class="text-xl sm:text-2xl text-white max-w-3xl mx-auto drop-shadow-md">Your trusted partner in finding the perfect property in Kenya</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <!-- Mission Section -->
+            <section class="mb-16">
+                <div class="bg-white rounded-2xl shadow-lg p-8 sm:p-12 border-2 border-gray-200">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-xl">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">Our Mission</h2>
+                    </div>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">
+                        At Cosy Hideaway kenya, we are dedicated to providing exceptional property management and rental services across Kenya. Our mission is to connect people with their ideal homes, whether they're looking to buy, rent, or experience short-term stays.
+                    </p>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        We believe that finding the perfect property should be a seamless and enjoyable experience. With our comprehensive platform, we make it easy for property owners to showcase their listings and for tenants to discover their next home.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Values Section -->
+            <section class="mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-12">Our Core Values</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-6 border-2 border-blue-100 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="bg-blue-600 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Trust & Reliability</h3>
+                        <p class="text-gray-700">We build lasting relationships based on trust, transparency, and reliability with all our clients.</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-white to-green-50 rounded-2xl p-6 border-2 border-green-100 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="bg-green-600 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Excellence</h3>
+                        <p class="text-gray-700">We strive for excellence in every aspect of our service, from property listings to customer support.</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-white to-purple-50 rounded-2xl p-6 border-2 border-purple-100 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="bg-purple-600 w-16 h-16 rounded-xl flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Customer Focus</h3>
+                        <p class="text-gray-700">Our customers are at the heart of everything we do. We prioritize their needs and satisfaction.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Services Section -->
+            <section class="mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-12">What We Offer</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">🏠</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Property Sales</h3>
+                        <p class="text-gray-700">Find your dream home with our extensive collection of properties for sale across Kenya.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">🔑</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Rental Properties</h3>
+                        <p class="text-gray-700">Discover affordable rental options for apartments, houses, and commercial spaces.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">✨</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">AirBnB Listings</h3>
+                        <p class="text-gray-700">Experience comfortable short-term stays with our curated AirBnB property listings.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Property Management</h3>
+                        <p class="text-gray-700">Comprehensive property management services for landlords and property owners.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">💼</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Tenant Services</h3>
+                        <p class="text-gray-700">Easy booking, payment tracking, and maintenance request management for tenants.</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 border-2 border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Analytics & Reports</h3>
+                        <p class="text-gray-700">Detailed insights and reports to help you make informed property decisions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Choose Us Section -->
+            <section class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 sm:p-12 border-2 border-blue-100 shadow-lg">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-12">Why Choose Cosy Hideaway kenya?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-600 p-3 rounded-lg flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Wide Selection</h3>
+                            <p class="text-gray-700">Browse through hundreds of verified properties across different locations and price ranges.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-600 p-3 rounded-lg flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Easy Booking</h3>
+                            <p class="text-gray-700">Simple and intuitive booking process that makes finding and securing properties effortless.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-600 p-3 rounded-lg flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Secure Payments</h3>
+                            <p class="text-gray-700">Safe and secure payment processing with multiple payment options available.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-600 p-3 rounded-lg flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">24/7 Support</h3>
+                            <p class="text-gray-700">Round-the-clock customer support to assist you with any questions or concerns.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-4">
+                <div class="flex flex-wrap justify-center gap-4 mb-4">
+                    <a href="/terms" class="text-sm text-gray-300 hover:text-white transition underline">Terms of Service</a>
+                    <span class="text-gray-500">|</span>
+                    <a href="/privacy" class="text-sm text-gray-300 hover:text-white transition underline">Privacy Policy</a>
+                </div>
+                <p class="text-sm mb-2">&copy; 2025 Cosy Hideaway kenya. All rights reserved.</p>
+                <p class="text-xs text-gray-400">
+                    Developed by <a href="https://epicedgecreative.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 underline transition font-medium">EpicEdge Creative</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
+

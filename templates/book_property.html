@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Property - {{ property.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="text-xl font-bold text-gray-800">Cosy Hideaway kenya</a>
+                <a href="/property/{{ property.id }}" class="text-sm text-gray-600 hover:text-gray-900">← Back</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
+            <!-- Header -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-1">
+                    {% if property.property_type == 'sale' %}Request Viewing
+                    {% elif property.property_type == 'rent' %}Book Property
+                    {% else %}Book AirBnB Stay{% endif %}
+                </h1>
+                <p class="text-gray-600">{{ property.title }} - {{ property.city }}</p>
+                <p class="text-lg font-semibold text-gray-900 mt-2">KSH {{ "{:,.0f}".format(property.price) }}{% if property.property_type == 'airbnb' %}/night{% elif property.property_type == 'rent' %}/month{% endif %}</p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="mb-4 p-3 rounded-lg {% if category == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-green-50 text-green-800 border border-green-200{% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Quick Booking Info -->
+            {% if not user or not user.id %}
+            <div class="mb-6 p-4 rounded-lg border-l-4 border-gray-600 bg-gray-50">
+                <p class="text-sm text-gray-700 mb-2">
+                    {% if property.property_type == 'sale' %}You can request a viewing as a guest. No account needed!
+                    {% elif property.property_type == 'rent' %}You can book as a guest. <strong>Note:</strong> If your rental is approved, you'll need to create an account to become a tenant.
+                    {% else %}You can book as a guest. No account needed!{% endif %}
+                </p>
+                <p class="text-xs text-gray-600 mt-2">
+                    <a href="/register" class="text-blue-600 hover:text-blue-800 underline">Create an account</a> to track your bookings and manage your rentals.
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Booking Form -->
+            <form method="POST" action="/book-property/{{ property.id }}" class="space-y-6">
+                <!-- Guest Contact Information -->
+                {% if not user or not user.id %}
+                <div class="space-y-4 pb-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Contact Information</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="guest_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="guest_name" id="guest_name" required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                                   placeholder="Enter your full name">
+                        </div>
+                        <div>
+                            <label for="guest_email" class="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            <input type="email" name="guest_email" id="guest_email" required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                                   placeholder="your.email@example.com">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="guest_phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                Phone Number
+                            </label>
+                            <input type="tel" name="guest_phone" id="guest_phone"
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                                   placeholder="+254 700 000 000">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Date Selection -->
+                {% if property.property_type == 'airbnb' %}
+                <!-- AirBnB: Check-in and Check-out dates -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Booking Dates</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
+                                Check-in Date <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="start_date" id="start_date" required 
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500">
+                        </div>
+                        <div>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">
+                                Check-out Date <span class="text-red-500">*</span>
+                            </label>
+                            <input type="date" name="end_date" id="end_date" required
+                                   class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500">
+                        </div>
+                    </div>
+                </div>
+                {% elif property.property_type == 'rent' %}
+                <!-- Rent: Only booking/start date -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Booking Date</h3>
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
+                            Preferred Booking Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="start_date" id="start_date" required 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500">
+                        <p class="text-xs text-gray-500 mt-1">When would you like to start your rental?</p>
+                    </div>
+                </div>
+                {% elif property.property_type == 'sale' %}
+                <!-- Sale: Only viewing date -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Viewing Date</h3>
+                    <div>
+                        <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
+                            Preferred Viewing Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="start_date" id="start_date" required 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500">
+                        <p class="text-xs text-gray-500 mt-1">When would you like to view this property?</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Message -->
+                <div class="space-y-4">
+                    <label for="message" class="block text-sm font-medium text-gray-700">
+                        {% if property.property_type == 'sale' %}Inquiry Message{% else %}Additional Message{% endif %}
+                    </label>
+                    <textarea name="message" id="message" rows="4" 
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 resize-none"
+                              placeholder="{% if property.property_type == 'sale' %}Tell us about your interest...{% else %}Any special requests or questions...{% endif %}"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 pt-4">
+                    <a href="/property/{{ property.id }}" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition">
+                        Cancel
+                    </a>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 font-medium transition">
+                        {% if property.property_type == 'sale' %}Submit Inquiry
+                        {% elif property.property_type == 'rent' %}Submit Booking Request
+                        {% else %}Book Now{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Set minimum dates and validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('end_date');
+            
+            if (startDateInput) {
+                startDateInput.min = today;
+                
+                // For AirBnB: Ensure end date is after start date
+                if (endDateInput) {
+                    startDateInput.addEventListener('change', function() {
+                        if (this.value) {
+                            // Set minimum end date to day after start date
+                            const startDate = new Date(this.value);
+                            startDate.setDate(startDate.getDate() + 1);
+                            endDateInput.min = startDate.toISOString().split('T')[0];
+                            if (endDateInput.value && endDateInput.value <= this.value) {
+                                endDateInput.value = '';
+                            }
+                        }
+                    });
+                }
+            }
+            
+            // For AirBnB: Set minimum end date
+            if (endDateInput) {
+                endDateInput.min = today;
+            }
+        });
+    </script>
+</body>
+</html>
