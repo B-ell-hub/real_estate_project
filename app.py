@@ -29,6 +29,9 @@ SMTP_PASS = 'lgte eojw nwsp fqlp'  # Provided app password
 EMAIL_FROM = SMTP_USER
 USE_TLS = True
 
+# Base URL for email links - Your website URL
+BASE_URL = 'https://cosyhideawaykenya.amutsa.com'
+
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
@@ -228,6 +231,10 @@ def send_admin_booking_notification(booking_id, property_title, property_city, c
 def send_welcome_email(user_email, user_name):
     """Send welcome email to newly registered users"""
     try:
+        # Default to tenant dashboard for new registrations
+        dashboard_url = f"{BASE_URL}/tenant/dashboard"
+        login_url = f"{BASE_URL}/login?next={dashboard_url}"
+        
         msg = MIMEMultipart()
         msg['From'] = EMAIL_FROM
         msg['To'] = user_email
@@ -258,14 +265,14 @@ def send_welcome_email(user_email, user_name):
                     </div>
                     
                     <div style="text-align: center; margin: 30px 0;">
-                        <a href="http://127.0.0.1:5000/login" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: transform 0.2s;">Login to Your Account</a>
+                        <a href="{login_url}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; transition: transform 0.2s;">Login to Your Dashboard</a>
                     </div>
                     
                     <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
                         <h4 style="margin-top: 0; color: #1f2937;">Need Help?</h4>
                         <p style="margin: 5px 0; color: #6b7280;">If you have any questions or need assistance, feel free to:</p>
                         <ul style="margin: 10px 0; padding-left: 20px; color: #6b7280;">
-                            <li>Visit our <a href="http://127.0.0.1:5000/contact" style="color: #2563eb; text-decoration: none;">Contact Us</a> page</li>
+                            <li>Visit our <a href="{base_url}/contact" style="color: #2563eb; text-decoration: none;">Contact Us</a> page</li>
                             <li>Email us at <a href="mailto:epicedgecreative@gmail.com" style="color: #2563eb; text-decoration: none;">epicedgecreative@gmail.com</a></li>
                             <li>Call us at <a href="tel:+254787205456" style="color: #2563eb; text-decoration: none;">+254 78 720 5456</a></li>
                         </ul>
@@ -284,8 +291,8 @@ def send_welcome_email(user_email, user_name):
                 <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
                     <p style="margin: 5px 0;">© 2025 Cosy Hideaway kenya. All rights reserved.</p>
                     <p style="margin: 5px 0;">
-                        <a href="http://127.0.0.1:5000/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a> | 
-                        <a href="http://127.0.0.1:5000/privacy" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
+                        <a href="{base_url}/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a> | 
+                        <a href="{base_url}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
                     </p>
                 </div>
             </div>
@@ -423,9 +430,19 @@ def generate_random_password(length=12):
     password = ''.join(secrets.choice(alphabet) for i in range(length))
     return password
 
-def send_account_creation_email(user_email, username, password, full_name):
+def send_account_creation_email(user_email, username, password, full_name, role='user'):
     """Send account creation email with login credentials"""
     try:
+        # Determine dashboard URL based on role
+        if role == 'admin':
+            dashboard_url = f"{BASE_URL}/admin/dashboard"
+        elif role == 'manager':
+            dashboard_url = f"{BASE_URL}/manager/dashboard"
+        else:
+            dashboard_url = f"{BASE_URL}/tenant/dashboard"
+        
+        login_url = f"{BASE_URL}/login?next={dashboard_url}"
+        
         msg = MIMEMultipart()
         msg['From'] = EMAIL_FROM
         msg['To'] = user_email
@@ -453,7 +470,7 @@ def send_account_creation_email(user_email, username, password, full_name):
                 </div>
                 
                 <p style="margin-top: 20px;">
-                    <a href="http://localhost:5000/login" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Login to Your Account</a>
+                    <a href="{login_url}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Login to Your Dashboard</a>
                 </p>
                 
                 <p style="margin-top: 30px; color: #6b7280; font-size: 12px;">
@@ -6458,7 +6475,7 @@ def activate_user(user_id):
 @app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
-    """Delete a user (soft delete) - Admin only"""
+    """Delete a user (permanent delete) - Admin only"""
     if user_id == session.get('user_id'):
         flash('You cannot delete your own account', 'error')
         return redirect(url_for('admin_users'))
@@ -6470,8 +6487,16 @@ def delete_user(user_id):
     
     try:
         cursor = conn.cursor()
-        # Soft delete - set status to deleted
-        cursor.execute("UPDATE users SET status = 'deleted' WHERE id = %s", (user_id,))
+
+        # Clean up related records to avoid orphaned data
+        cursor.execute("UPDATE bookings SET user_id = NULL WHERE user_id = %s", (user_id,))
+        cursor.execute("DELETE FROM property_favorites WHERE user_id = %s", (user_id,))
+        cursor.execute("DELETE FROM rental_reports WHERE reported_by = %s", (user_id,))
+        cursor.execute("DELETE FROM rentals WHERE tenant_id = %s", (user_id,))
+        cursor.execute("UPDATE rentals SET assigned_by = NULL WHERE assigned_by = %s", (user_id,))
+
+        # Permanently remove the user record
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         conn.commit()
         cursor.close()
         conn.close()
@@ -6576,7 +6601,7 @@ def create_user():
             
             # Send account creation email
             try:
-                send_account_creation_email(email, username, temp_password, full_name)
+                send_account_creation_email(email, username, temp_password, full_name, role)
                 flash(f'User account created successfully! Login credentials have been sent to {email}', 'success')
             except Exception as e:
                 print(f"Error sending email: {e}")

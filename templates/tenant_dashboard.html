@@ -44,17 +44,17 @@
                 
                 <!-- User Info -->
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex items-center">
+                <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
                                 {{ (user.username[0] if user and user.username else 'U').upper() }}
                             </div>
-                        </div>
+                </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-900">{{ (user.full_name or user.username) if user else 'User' }}</p>
                             <p class="text-xs text-gray-500">Tenant</p>
-                        </div>
-                    </div>
+                </div>
+            </div>
                 </div>
                 
                 <!-- Navigation -->
@@ -134,8 +134,8 @@
                             </svg>
                             Logout
                         </a>
-                    </div>
-                </nav>
+        </div>
+    </nav>
             </div>
         </aside>
         
@@ -473,7 +473,7 @@
                         </div>
                 {% endif %}
             </div>
-                </div>
+        </div>
             </main>
         </div>
         
