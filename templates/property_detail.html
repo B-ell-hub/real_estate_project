@@ -186,10 +186,10 @@
             </div>
         </section>
 
-        <!-- View Details Toggle Button -->
+        <!-- More Details Toggle Button -->
         <div class="flex justify-center py-4">
             <button onclick="toggleDetails()" id="detailsToggle" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 text-base transform hover:scale-105">
-                <span>View Details</span>
+                <span>More Details</span>
                 <svg id="toggleIcon" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
@@ -447,7 +447,7 @@
                 toggleIcon.style.transform = 'rotate(180deg)';
             } else {
                 detailsSection.classList.add('hidden');
-                toggleButton.querySelector('span').textContent = 'View Details';
+                toggleButton.querySelector('span').textContent = 'More Details';
                 toggleIcon.style.transform = 'rotate(0deg)';
             }
         }

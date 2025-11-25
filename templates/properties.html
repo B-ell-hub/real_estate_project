@@ -28,6 +28,14 @@
                 display: block;
             }
         }
+        #filtersSection {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        #filtersSection.hidden-scroll {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -85,7 +93,7 @@
     </nav>
 
     <!-- Filters Section -->
-    <section class="bg-gradient-to-br from-gray-50 to-white shadow-lg sticky top-16 z-40 border-b border-gray-200">
+    <section id="filtersSection" class="bg-gradient-to-br from-gray-50 to-white shadow-lg sticky top-16 z-40 border-b border-gray-200 transition-transform duration-300 ease-in-out">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
             <form method="GET" action="/properties" class="space-y-3 sm:space-y-5">
                 <!-- Main Search Bar -->
@@ -456,6 +464,37 @@
             filters.classList.toggle('hidden');
             icon.classList.toggle('rotate-180');
         }
+        
+        // Hide/Show filters on scroll
+        let lastScrollTop = 0;
+        const filtersSection = document.getElementById('filtersSection');
+        let ticking = false;
+        
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    // Hide filters when scrolling down past 100px, show when scrolling up
+                    if (scrollTop > 100) {
+                        if (scrollTop > lastScrollTop) {
+                            // Scrolling down - hide filters
+                            filtersSection.classList.add('hidden-scroll');
+                        } else {
+                            // Scrolling up - show filters
+                            filtersSection.classList.remove('hidden-scroll');
+                        }
+                    } else {
+                        // Always show filters when near top
+                        filtersSection.classList.remove('hidden-scroll');
+                    }
+                    
+                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
         
         // Favorite functionality for property cards
         {% if user %}
