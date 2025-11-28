@@ -162,9 +162,9 @@
             {% for property in properties %}
             <div class="bg-white rounded-lg shadow-lg overflow-hidden property-card">
                 <a href="/property/{{ property.id }}">
-                    <div class="h-48 sm:h-56 bg-gray-200 overflow-hidden relative">
+                    <div class="h-64 sm:h-80 lg:h-96 bg-gray-200 overflow-hidden relative">
                         {% if property.images and property.images|length > 0 %}
-                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-300">
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
                         {% endif %}

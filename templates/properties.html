@@ -240,9 +240,9 @@
             {% for property in properties %}
             <div class="bg-white rounded-xl shadow-lg overflow-hidden property-card cursor-pointer border border-gray-100 hover:border-blue-200 transition-all duration-300 flex flex-col">
                 <a href="/property/{{ property.id }}" class="block flex flex-col flex-grow">
-                    <div class="h-52 sm:h-64 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative flex-shrink-0">
+                    <div class="h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative flex-shrink-0">
                         {% if property.images and property.images|length > 0 %}
-                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover property-image">
+                        <img src="/static/{{ property.images[0] }}" alt="{{ property.title }}" class="w-full h-full object-cover object-top property-image">
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-50 to-gray-100">
                             <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
