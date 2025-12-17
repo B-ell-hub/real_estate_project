@@ -40,7 +40,7 @@ DB_CONFIG = {
     'database': 'Real estate',
     'user': 'root',
     'password': '',  # Update with your MySQL password
-    'port': 3306
+    'port': 3307
 }
 ```
 
