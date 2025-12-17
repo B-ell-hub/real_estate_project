@@ -2226,7 +2226,8 @@ def manager_assign_new_rental():
                 flash('This tenant already has an active rental for this property', 'error')
                 return redirect(url_for('manager_assign_new_rental'))
 
-            lease_start_date = datetime.strptime(lease_start, '%Y-%m-%d').date() if lease_start and lease_start.strip() else None
+            # If lease_start not provided in the form, default to today so we don't insert NULL
+            lease_start_date = datetime.strptime(lease_start, '%Y-%m-%d').date() if lease_start and lease_start.strip() else date.today()
             lease_end_date = datetime.strptime(lease_end, '%Y-%m-%d').date() if lease_end and lease_end.strip() else None
             rent_amount_value = float(rent_amount)
             deposit_amount_value = float(deposit_amount) if deposit_amount else 0
@@ -3929,7 +3930,8 @@ def assign_new_rental():
                 flash('This tenant already has an active rental for this property', 'error')
                 return redirect(url_for('assign_new_rental'))
 
-            lease_start_date = datetime.strptime(lease_start, '%Y-%m-%d').date() if lease_start and lease_start.strip() else None
+            # If lease_start not provided in the form, default to today so we don't insert NULL
+            lease_start_date = datetime.strptime(lease_start, '%Y-%m-%d').date() if lease_start and lease_start.strip() else date.today()
             lease_end_date = datetime.strptime(lease_end, '%Y-%m-%d').date() if lease_end and lease_end.strip() else None
             rent_amount_value = float(rent_amount)
             deposit_amount_value = float(deposit_amount) if deposit_amount else 0
