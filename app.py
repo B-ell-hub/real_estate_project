@@ -24,13 +24,13 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 # Email configuration (Gmail SMTP)
 SMTP_HOST = 'smtp.gmail.com'
 SMTP_PORT = 587
-SMTP_USER = 'epicedgecreative@gmail.com'
-SMTP_PASS = 'lgte eojw nwsp fqlp'  # Provided app password
+SMTP_USER = ''
+SMTP_PASS = ''  # Provided app password
 EMAIL_FROM = SMTP_USER
 USE_TLS = True
 
 # Base URL for email links - Your website URL
-BASE_URL = 'https://cosyhideawaykenya.amutsa.com'
+BASE_URL = ''
 
 # Allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -44,7 +44,7 @@ DB_CONFIG = {
     'database': 'Real estate',
     'user': 'root',
     'password': '',
-    'port': 3306
+    'port': 3307
 }
 
 def get_db_connection():
@@ -272,7 +272,7 @@ def send_welcome_email(user_email, user_name):
                         <h4 style="margin-top: 0; color: #1f2937;">Need Help?</h4>
                         <p style="margin: 5px 0; color: #6b7280;">If you have any questions or need assistance, feel free to:</p>
                         <ul style="margin: 10px 0; padding-left: 20px; color: #6b7280;">
-                            <li>Visit our <a href="{base_url}/contact" style="color: #2563eb; text-decoration: none;">Contact Us</a> page</li>
+                            <li>Visit our <a href="{BASE_URL}/contact" style="color: #2563eb; text-decoration: none;">Contact Us</a> page</li>
                             <li>Email us at <a href="mailto:epicedgecreative@gmail.com" style="color: #2563eb; text-decoration: none;">epicedgecreative@gmail.com</a></li>
                             <li>Call us at <a href="tel:+254787205456" style="color: #2563eb; text-decoration: none;">+254 78 720 5456</a></li>
                         </ul>
@@ -290,9 +290,9 @@ def send_welcome_email(user_email, user_name):
                 
                 <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
                     <p style="margin: 5px 0;">© 2025 Cosy Hideaway kenya. All rights reserved.</p>
-                    <p style="margin: 5px 0;">
-                        <a href="{base_url}/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a> | 
-                        <a href="{base_url}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
+                        <p style="margin: 5px 0;">
+                        <a href="{BASE_URL}/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a> | 
+                        <a href="{BASE_URL}/privacy" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
                     </p>
                 </div>
             </div>

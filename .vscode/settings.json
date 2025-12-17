@@ -1,0 +1,7 @@
+{
+    // Default interpreter for this workspace (point to the created .venv)
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    // Improve Pylance performance (optional): use the workspace venv for analysis
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.useImportHeuristic": true
+}
